@@ -144,3 +144,32 @@ if st.button("Remove Schedule"):
     st.success("✅ Schedule Entry Removed Successfully!")
 uploaded_files = st.file_uploader("Upload Class Schedule (Excel)", type=["xlsx"], accept_multiple_files=True)
 
+import streamlit as st
+import streamlit_authenticator as stauth
+import yaml
+from yaml.loader import SafeLoader
+
+with open("config.yaml") as file:
+    config = yaml.load(file, Loader=SafeLoader)
+
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days']
+)
+
+name, authentication_status, username = authenticator.login("Login", "main")
+
+if authentication_status:
+    st.write(f"Welcome {name}!")
+    # Your dashboard content here
+elif authentication_status is False:
+    st.error("Incorrect username or password")
+elif authentication_status is None:
+    st.warning("Please enter your credentials")
+
+authenticator.logout("Logout", "sidebar")
+if authentication_status:
+    st.subheader("Secure Dashboard")
+    st.write("This page is protected")
